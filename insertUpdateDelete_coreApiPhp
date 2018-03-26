@@ -1,0 +1,85 @@
+<?php
+include 'connect.php';
+
+error_reporting(0);
+$postData = file_get_contents('php://input');
+$postData = json_decode($postData,true);
+
+/*echo '<pre>';
+print_r($postData);
+echo '</pre>';*/
+
+switch ($postData['eventName']) {
+	case 'newTask':
+		
+		$qry2 = mysqli_query($conn,'INSERT into tl_tasks (t_id,user_id,t_title,t_comment,t_status,created_on) VALUES("","'.$postData['user_id'].'","'.$postData['t_title'].'","'.$postData['t_comment'].'","'.$postData['t_status'].'","'.date('Y-m-d H:i:s').'")');
+		if($qry2){
+			$res['data'] = array();
+			$res['status'] = 'success';
+			$res['message'] = 'Insert successfully';
+		}else{
+			$res['data'] = array();
+			$res['status'] = 'fail';
+			$res['message'] = 'something went wrong';
+		}
+		break;
+	case 'userLogin':
+		$qry1 = mysqli_query($conn,'SELECT * FROM tl_user WHERE phonenumber='.$postData['phonenumber']);
+		$qry1num = mysqli_num_rows($qry1);
+
+		if($qry1num == 0){
+			$qry2 = mysqli_query($conn,'INSERT into tl_user (user_id,phonenumber) VALUES("","'.$postData['phonenumber'].'")');
+			if($qry2){
+				$res['data'] = array();
+				$res['status'] = 'success';
+				$res['message'] = 'Register and login successfully';
+			}else{
+				$res['data'] = array();
+				$res['status'] = 'fail';
+				$res['message'] = 'something went wrong';
+			}
+		}else{
+			$res['data'] = array();
+			$res['status'] = 'success';
+			$res['message'] = 'Login successfully';
+		}
+	case 'updateTask':
+	$qry1 = mysqli_query($conn,'UPDATE tl_tasks SET t_title ="'.$postData['t_title'].'", t_comment ="'.$postData['t_comment'].'",t_status="'.$postData['t_status'].'" WHERE t_id='.$postData['t_id']);
+	if($qry1){
+			$res['data'] = array();
+			$res['status'] = 'success';
+			$res['message'] = 'Update successfully';
+		}else{
+			$res['data'] = array();
+			$res['status'] = 'fail';
+			$res['message'] = 'something went wrong';
+		}
+	case 'gettask':
+		$qry1 = mysqli_query($conn,'SELECT * FROM tl_user WHERE phonenumber='.$postData['phonenumber']);
+		$qry1num = mysqli_num_rows($qry1);
+		$qry1Arr = mysqli_fetch_array($qry1,MYSQLI_ASSOC);
+			if($qry1num == 0){
+			$res['data'] = array();
+			$res['status'] = 'success';
+			$res['message'] = 'No phone found';
+		}else{
+			$qry2 = mysqli_query($conn,'SELECT * FROM tl_tasks WHERE user_id='.$qry1Arr['user_id']);
+			$qry2num = mysqli_num_rows($qry2);
+			$qry2Arr = mysqli_fetch_all($qry2,MYSQLI_ASSOC);
+			if(empty($qry2Arr)){
+				$res['data'] = array();
+				$res['status'] = 'success';
+				$res['message'] = ' no task listed';
+			}else{
+				$res['data'] = $qry2Arr;
+				$res['status'] = 'success';
+				$res['message'] = 'task listed successfully';
+			}
+		}
+	default:
+		# code...
+		break;
+}
+echo json_encode($res);
+
+?>
