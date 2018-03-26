@@ -77,7 +77,9 @@ switch ($postData['eventName']) {
 			}
 		}
 	default:
-		# code...
+		$res['data'] = array();
+		$res['status'] = 'fail';
+		$res['message'] = 'No event found';
 		break;
 }
 echo json_encode($res);
