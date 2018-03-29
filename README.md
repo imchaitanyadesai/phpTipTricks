@@ -1,2 +1,2 @@
-# Php Tips and Trick
-Bunch of code for different operation and methods
+# Php Tips and Tricks
+Bunch of codes for different operation and methods
