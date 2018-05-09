@@ -9,74 +9,11 @@ class Mdl_common extends CI_Model
 	}
 	
 	function check_session(){	
-
 		if($this->session->userdata('eb-user') == "" ){
 			redirect('/');
-		}else{
-			
-			$accountArr = $this->session->userdata('eb-user');
-			//pr($accountArr);
-			if($accountArr['user_service_type'] == '0'){
-				
-                $usertype = 'provider';
-                if($this->uri->segment(1) == 'seeker'){
-            		redirect('/');
-            	}
-            }else{
-
-                $usertype = 'seeker';
-                if($this->uri->segment(1) == 'provider'){
-            		redirect('/');
-            	}
-            }
-	           if($accountArr['user_setup'] == 'STEP1' && $accountArr['user_service_type'] == '0'){
-                
-	           		if($this->uri->segment(2) != 'profile'){
-	            		redirect(''.$usertype.'/profile');
-	            	}
-	        	}else if($accountArr['user_setup'] == 'STEP2' && $accountArr['user_service_type'] == '0'){
-
-	        		if($this->uri->segment(2) != 'taxid' && $this->uri->segment(2) != 'profile'){
-	            		redirect(''.$usertype.'/taxid');
-	            	}
-	        	}else if($accountArr['user_setup'] == 'STEP3' && $accountArr['user_service_type'] == '0'){
-	        		if($this->uri->segment(2) != 'paymentinformation' && $this->uri->segment(2) != 'taxid' && $this->uri->segment(2) != 'profile'){
-	            		redirect(''.$usertype.'/paymentinformation');
-	            	}
-	        	}else if($accountArr['user_setup'] == 'STEP4' && $accountArr['user_service_type'] == '0'){
-	        		if($this->uri->segment(2) != 'securityquestion' && $this->uri->segment(2) != 'paymentinformation' && $this->uri->segment(2) != 'taxid' && $this->uri->segment(2) != 'profile'){
-	            		redirect(''.$usertype.'/securityquestion');
-	            	}
-	        	}
-
-                if($accountArr['user_setup'] == 'STEP1' && $accountArr['user_service_type'] == '1'){
-
-                    if($this->uri->segment(2) == 'securityquestion' || $this->uri->segment(2) == 'paymentinformation' || $this->uri->segment(2) == 'taxid'){
-                        redirect(''.$usertype.'/profile');
-        	}
-                }else if($accountArr['user_setup'] == 'STEP3' && $accountArr['user_service_type'] == '1'){
-                    if($this->uri->segment(2) == 'taxid' || $this->uri->segment(2) == 'securityquestion'){
-                        redirect(''.$usertype.'/paymentinformation');
+		}
 	}
-                }else if($accountArr['user_setup'] == 'STEP4' && $accountArr['user_service_type'] == '1'){
-                    if($this->uri->segment(2) == 'taxid' || $this->uri->segment(2) == 'changepassword' || $this->uri->segment(2) == 'notificationsetting'){
-                        redirect(''.$usertype.'/securityquestion');
-                    }
-                }
-        	}
-	}
-	function check_user_type(){
-		$accountArr = $this->session->userdata('eb-user');
-		if($accountArr['user_service_type'] == 0){
-            if($this->uri->segment(1) == 'seeker'){
-            	redirect('/');
-            }
-        }else{
-             if($this->uri->segment(1) == 'provider'){
-            	redirect('/');
-            }
-        }
-	}	
+	
 		
     function pagiationData($str,$num,$start,$segment,$per_page='20' ){
 	 
