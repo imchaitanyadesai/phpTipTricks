@@ -303,34 +303,7 @@ function addhttp($url) {
     }
     return $url;
 }
-function browserTime($date){
-    $CI = & get_instance();
-    $simpledate = $date;
-    $timezone1 = new DateTimeZone($CI->input->cookie('time',true));
-    $datetime = new DateTime($simpledate);
-    $datetime->setTimezone($timezone1);
-    return $datetime->format('Y-m-d H:i:s');
-}
-function whichTimeSet($date){
-    $CI = & get_instance();
-    $timeSet = $CI->input->cookie('time',true);
-    if($timeSet == ''){
-        $commentDate = $date;
-    }else{
-        $tt=strtotime($date);
-        $finaldate = date('Y:m:d H:i:s',$tt);
-        $commentDate = browserTime($finaldate);
-    }
-    return $commentDate;
-}
-function timeAmPm($time){
-    $CI = & get_instance();
-    $simpledate = $time;
-    $timezone1 = new DateTimeZone($CI->input->cookie('time',true));
-    $datetime = new DateTime($simpledate);
-    $datetime->setTimezone($timezone1);
-    return $datetime->format('g:i A');
-}  
+  
 function ratingStar($ratingStar){
     $cfg_min_stars = 1;
     $cfg_max_stars = 5;
@@ -350,59 +323,5 @@ function ratingStar($ratingStar){
         }
     }
 }
-function transactionPayout($providerId){
-    $CI = & get_instance();
 
-    $transaction = $CI->db
-        ->select('sum(t_total) as total, sum(t_refund) as refund, (sum(t_total) - sum(t_refund)) as final')
-        ->where('provider_id = '.$providerId.' and t_type != "REFUND" and  created_on <= NOW() - INTERVAL 3 DAY')
-        ->get('eb_transaction')
-        ->row_array();
-
-  $payout = $CI->db
-        ->select('sum(withoutTax) as total')
-        ->where('user_id = '.$providerId)
-        ->get('eb_payout')
-        ->row_array();
-
-    if($payout['total'] == NULL or $payout['total'] == '0'){
-        $payoutT = 0;
-    }else{
-        $payoutCharge =  (SERVICE_CHARGE * $payout['total'] / 100) + $payout['total'];
-        $payoutT = $payout['total'];
-    }
-    if($transaction['final'] == NULL or $transaction['final'] == '0'){
-        $transactionT =0;
-    }else{
-        $transactionT = $transaction['final'];
-    }
-    $payoutT = str_replace(',','',$payoutT);
-    $transactionT = str_replace(',','',$transactionT);
-
-    $wallet = $transactionT - $payoutT;
-    return $wallet;
-}
-function pendingPayout($providerId){
-    $CI = & get_instance();
-
-    $transaction = $CI->db
-        ->select('sum(t_total) as total')
-        ->where('provider_id = '.$providerId.' and t_type != "REFUND" and  created_on >= NOW() - INTERVAL 3 DAY')
-        ->get('eb_transaction')
-        ->row_array();
-//echo $CI->db->last_query();
-    if($transaction['total'] == NULL or $transaction['total'] == '0'){
-        $transactionT =0;
-    }else{
-        $transactionT = $transaction['total'];
-    }
-    $transactionT = str_replace(',','',$transactionT);
-
-    $wallet = $transactionT;
-    return $wallet;
-}
-function paypalCountry(){
-    $countryArr = array('India','Sri lanka','Thailan');
-    return $countryArr;
-}
 ?>
