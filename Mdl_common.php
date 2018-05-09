@@ -9,7 +9,7 @@ class Mdl_common extends CI_Model
 	}
 	
 	function check_session(){	
-		if($this->session->userdata('user_id') == "" ){
+		if($this->session->userdata('customer-user') == "" ){
 			redirect('/');
 		}
 	}
