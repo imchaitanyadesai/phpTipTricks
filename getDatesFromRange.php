@@ -25,15 +25,52 @@ function getDatesFromRange($start, $end, $format = 'Y-m-d') {
     return $array;
 }
 
-getDatesFromRange('2018-05-16', '2018-05-25');
+getDatesFromRange('2018-05-19', '2018-05-25');
 
 /*
 Array
 (
-    [0] => 2010-10-01
-    [1] => 2010-10-02
-    [2] => 2010-10-03
-    [3] => 2010-10-04
-    [4] => 2010-10-05
+    [0] => Array
+        (
+            [date] => 2018-05-19
+            [day] => Sat
+        )
+
+    [1] => Array
+        (
+            [date] => 2018-05-20
+            [day] => Sun
+        )
+
+    [2] => Array
+        (
+            [date] => 2018-05-21
+            [day] => Mon
+        )
+
+    [3] => Array
+        (
+            [date] => 2018-05-22
+            [day] => Tue
+        )
+
+    [4] => Array
+        (
+            [date] => 2018-05-23
+            [day] => Wed
+        )
+
+    [5] => Array
+        (
+            [date] => 2018-05-24
+            [day] => Thu
+        )
+
+    [6] => Array
+        (
+            [date] => 2018-05-25
+            [day] => Fri
+        )
+
 )
 */
