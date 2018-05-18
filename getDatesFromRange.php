@@ -17,8 +17,9 @@ function getDatesFromRange($start, $end, $format = 'Y-m-d') {
 
     $period = new DatePeriod(new DateTime($start), $interval, $realEnd);
 
-    foreach($period as $date) { 
-        $array[] = $date->format($format); 
+    foreach($period as $key => $date) { 
+        $array[$key]['date'] = $date->format($format);
+        $array[$key]['day']  = date('D', strtotime($date->format($format))); 
     }
 
     return $array;
