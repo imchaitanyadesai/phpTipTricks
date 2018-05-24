@@ -3,8 +3,8 @@ Bunch of codes for different operation and methods
 
 Recently this 3 file is added into phpTipTricks:
 
-CRUD_operation_coreApiPhp.php
+1) CRUD_operation_coreApiPhp.php
 
-getDatesFromRange.php
+2) getDatesFromRange.php
 
-unique_multidim_array.php
+3) unique_multidim_array.php
