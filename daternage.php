@@ -1,0 +1,1 @@
+((('2018-06-11 01:30:39' BETWEEN AV.from_time AND AV.to_time) OR ("2018-06-11 03:30:39" BETWEEN AV.from_time AND AV.to_time)) OR ((AV.from_time BETWEEN '2018-06-11 01:30:39' AND "2018-06-11 03:30:39") OR (AV.to_time BETWEEN '2018-06-11 01:30:39' AND "2018-06-11 03:30:39")) )
