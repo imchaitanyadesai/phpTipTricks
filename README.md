@@ -3,8 +3,7 @@ Bunch of codes for different operation and methods
 
 Recently this 3 file is added into phpTipTricks:
 
-1) CRUD_operation_coreApiPhp.php
+1) twilioSmsApi.php
 
-2) getDatesFromRange.php
+2) clickSendApi.php
 
-3) unique_multidim_array.php
