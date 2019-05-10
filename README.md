@@ -1,9 +1,7 @@
 # Php Tips and Tricks
 Bunch of codes for different operation and methods
 
-Recently this 2 file is added into phpTipTricks:
+Recently this 1 file is added into phpTipTricks:
 
-1) twilioSmsApi.php
-
-2) clickSendApi.php
+1) export_to_csv.php
 
