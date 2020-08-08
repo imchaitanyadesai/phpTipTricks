@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Add/remove inputs dynamically</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+  <h1>Add/remove inputs dynamically</h1>
+  <p>With the help of html, jquery and bootstrap design</p> 
+</div>
+  
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12" id="textfield"> <!-- textfield here we append our dynamic fields -->
+      <div id="text_div0">
+        <label>Phone no:</label>
+        <input type="text" name="text0" class="text0" placeholder="Please enter phone no">
+        <button type="button" name="button0" onclick="addtextfield()" class="btn btn-primary">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  var textfield_no = 1;
+  function addtextfield(){
+    var html = '<div id="text_div'+textfield_no+'">';
+    html += '<label>Phone No:</label>';
+    html += '<input type="text" name="text'+textfield_no+'" class="text'+textfield_no+'" placeholder="Please enter phone no">';
+    html += '<button type="button" name="button'+textfield_no+'" onclick="minustextfield('+textfield_no+')" class="btn btn-danger">-</button>';
+    html += '</div>';
+    $('#textfield').append(html);
+    textfield_no++;
+  }
+
+  function minustextfield(text_no){
+    $('#text_div'+text_no).remove();
+    textfield_no--;
+  }
+</script>
+
+</body>
+</html>
