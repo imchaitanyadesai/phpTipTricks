@@ -12,9 +12,15 @@ echo '</pre>';*/
 switch ($postData['eventName']) {
 	case 'newTask':
 		
-		$qry2 = mysqli_query($conn,'INSERT into tl_tasks (t_id,user_id,t_title,t_comment,t_status,created_on) VALUES("","'.$postData['user_id'].'","'.$postData['t_title'].'","'.$postData['t_comment'].'","'.$postData['t_status'].'","'.date('Y-m-d H:i:s').'")');
+		$qry2 = mysqli_query($conn,'INSERT into tasks (id,user_id,title,comment,status,created_on) VALUES("","'.$postData['user_id'].'","'.$postData['title'].'","'.$postData['comment'].'","'.$postData['status'].'","'.date('Y-m-d H:i:s').'")');
 		if($qry2){
-			$res['data'] = array();
+			$last_id = $conn->insert_id;
+
+			$qry3 = mysqli_query($conn,'SELECT * FROM tasks WHERE id='.$last_id);
+			$qry3num = mysqli_num_rows($qry3);
+			$qry3Arr = mysqli_fetch_all($qry3,MYSQLI_ASSOC);
+
+			$res['data'] = $qry3Arr;
 			$res['status'] = 'success';
 			$res['message'] = 'Insert successfully';
 		}else{
@@ -24,13 +30,19 @@ switch ($postData['eventName']) {
 		}
 		break;
 	case 'userLogin':
-		$qry1 = mysqli_query($conn,'SELECT * FROM tl_user WHERE phonenumber='.$postData['phonenumber']);
+		$qry1 = mysqli_query($conn,'SELECT * FROM users WHERE phone_no='.$postData['phone_no']);
 		$qry1num = mysqli_num_rows($qry1);
 
 		if($qry1num == 0){
-			$qry2 = mysqli_query($conn,'INSERT into tl_user (user_id,phonenumber) VALUES("","'.$postData['phonenumber'].'")');
+			$qry2 = mysqli_query($conn,'INSERT into users (id,phone_no) VALUES("","'.$postData['phone_no'].'")');
 			if($qry2){
-				$res['data'] = array();
+				$last_id = $conn->insert_id;
+
+				$qry3 = mysqli_query($conn,'SELECT * FROM users WHERE id='.$last_id);
+				$qry3num = mysqli_num_rows($qry3);
+				$qry3Arr = mysqli_fetch_all($qry3,MYSQLI_ASSOC);
+
+				$res['data'] = $qry3Arr;
 				$res['status'] = 'success';
 				$res['message'] = 'Register and login successfully';
 			}else{
@@ -39,14 +51,20 @@ switch ($postData['eventName']) {
 				$res['message'] = 'something went wrong';
 			}
 		}else{
-			$res['data'] = array();
+			$qry1Arr = mysqli_fetch_all($qry1,MYSQLI_ASSOC);
+			$res['data'] = $qry1Arr;
 			$res['status'] = 'success';
 			$res['message'] = 'Login successfully';
 		}
+		break;
 	case 'updateTask':
-	$qry1 = mysqli_query($conn,'UPDATE tl_tasks SET t_title ="'.$postData['t_title'].'", t_comment ="'.$postData['t_comment'].'",t_status="'.$postData['t_status'].'" WHERE t_id='.$postData['t_id']);
-	if($qry1){
-			$res['data'] = array();
+		$qry1 = mysqli_query($conn,'UPDATE tasks SET title ="'.$postData['title'].'", comment ="'.$postData['comment'].'",status="'.$postData['status'].'" WHERE id='.$postData['id']);
+		if($qry1){
+			$qry2 = mysqli_query($conn,'SELECT * FROM tasks WHERE id='.$postData['id']);
+			$qry2num = mysqli_num_rows($qry2);
+			$qry2Arr = mysqli_fetch_all($qry2,MYSQLI_ASSOC);
+
+			$res['data'] = $qry2Arr;
 			$res['status'] = 'success';
 			$res['message'] = 'Update successfully';
 		}else{
@@ -54,16 +72,17 @@ switch ($postData['eventName']) {
 			$res['status'] = 'fail';
 			$res['message'] = 'something went wrong';
 		}
+	break;
 	case 'gettask':
-		$qry1 = mysqli_query($conn,'SELECT * FROM tl_user WHERE phonenumber='.$postData['phonenumber']);
+		$qry1 = mysqli_query($conn,'SELECT * FROM users WHERE phone_no='.$postData['phone_no']);
 		$qry1num = mysqli_num_rows($qry1);
 		$qry1Arr = mysqli_fetch_array($qry1,MYSQLI_ASSOC);
-			if($qry1num == 0){
+		if($qry1num == 0){
 			$res['data'] = array();
 			$res['status'] = 'success';
 			$res['message'] = 'No phone found';
 		}else{
-			$qry2 = mysqli_query($conn,'SELECT * FROM tl_tasks WHERE user_id='.$qry1Arr['user_id']);
+			$qry2 = mysqli_query($conn,'SELECT * FROM tasks WHERE user_id='.$qry1Arr['id']);
 			$qry2num = mysqli_num_rows($qry2);
 			$qry2Arr = mysqli_fetch_all($qry2,MYSQLI_ASSOC);
 			if(empty($qry2Arr)){
@@ -76,6 +95,21 @@ switch ($postData['eventName']) {
 				$res['message'] = 'task listed successfully';
 			}
 		}
+		break;
+	case 'deletetask':
+		$qry1 = mysqli_query($conn,'DELETE FROM tasks WHERE id='.$postData['id']);
+		
+		if($qry1){
+			$res['data'] = array();
+			$res['status'] = 'success';
+			$res['message'] = 'Task deleted';
+		}else{
+			$res['data'] = array();
+			$res['status'] = 'failded';
+			$res['message'] = 'something went wrong';
+			
+		}
+	break;
 	default:
 		$res['data'] = array();
 		$res['status'] = 'fail';
