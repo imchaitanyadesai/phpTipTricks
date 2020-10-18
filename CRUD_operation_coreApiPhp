@@ -1,36 +1,44 @@
 <?php
-include 'connect.php';
+include 'connect.php'; //database connection code
 
 error_reporting(0);
-$postData = file_get_contents('php://input');
-$postData = json_decode($postData,true);
+$postData = file_get_contents('php://input'); //collect inout parameters
+$postData = json_decode($postData,true); //convert into readable format
 
 /*echo '<pre>';
 print_r($postData);
 echo '</pre>';*/
 
-switch ($postData['eventName']) {
-	case 'newTask':
+switch ($postData['eventName']) { //here event name is API name
+	case 'newTask': //We have create a case with API name so when we call API it work on only
+		//that section which it is call for
+		// Right now we are in new task so here new entry will enter in database
 		
 		$qry2 = mysqli_query($conn,'INSERT into tasks (id,user_id,title,comment,status,created_on) VALUES("","'.$postData['user_id'].'","'.$postData['title'].'","'.$postData['comment'].'","'.$postData['status'].'","'.date('Y-m-d H:i:s').'")');
+		// check this insert query
+
 		if($qry2){
-			$last_id = $conn->insert_id;
+			$last_id = $conn->insert_id; //fetch lasted added row id
 
 			$qry3 = mysqli_query($conn,'SELECT * FROM tasks WHERE id='.$last_id);
 			$qry3num = mysqli_num_rows($qry3);
 			$qry3Arr = mysqli_fetch_all($qry3,MYSQLI_ASSOC);
+			//collecte the lastest row with last id
 
-			$res['data'] = $qry3Arr;
+
+			//success the success message
+			$res['data'] = $qry3Arr; //send the added data to front end in json format
 			$res['status'] = 'success';
 			$res['message'] = 'Insert successfully';
 		}else{
+			//failed message
 			$res['data'] = array();
 			$res['status'] = 'fail';
 			$res['message'] = 'something went wrong';
 		}
-		break;
-	case 'userLogin':
-		$qry1 = mysqli_query($conn,'SELECT * FROM users WHERE phone_no='.$postData['phone_no']);
+	break;
+	case 'userLogin': //its start with user login/register
+		$qry1 = mysqli_query($conn,'SELECT * FROM users WHERE phone_no='.$postData['phone_no']); //search the phone no already added or not
 		$qry1num = mysqli_num_rows($qry1);
 
 		if($qry1num == 0){
@@ -56,8 +64,8 @@ switch ($postData['eventName']) {
 			$res['status'] = 'success';
 			$res['message'] = 'Login successfully';
 		}
-		break;
-	case 'updateTask':
+	break;
+	case 'updateTask': //update the task with the you collect from get API
 		$qry1 = mysqli_query($conn,'UPDATE tasks SET title ="'.$postData['title'].'", comment ="'.$postData['comment'].'",status="'.$postData['status'].'" WHERE id='.$postData['id']);
 		if($qry1){
 			$qry2 = mysqli_query($conn,'SELECT * FROM tasks WHERE id='.$postData['id']);
@@ -73,7 +81,7 @@ switch ($postData['eventName']) {
 			$res['message'] = 'something went wrong';
 		}
 	break;
-	case 'gettask':
+	case 'gettask': //to list out the all added task
 		$qry1 = mysqli_query($conn,'SELECT * FROM users WHERE phone_no='.$postData['phone_no']);
 		$qry1num = mysqli_num_rows($qry1);
 		$qry1Arr = mysqli_fetch_array($qry1,MYSQLI_ASSOC);
@@ -95,8 +103,8 @@ switch ($postData['eventName']) {
 				$res['message'] = 'task listed successfully';
 			}
 		}
-		break;
-	case 'deletetask':
+	break;
+	case 'deletetask': //In the end start complete delete the task
 		$qry1 = mysqli_query($conn,'DELETE FROM tasks WHERE id='.$postData['id']);
 		
 		if($qry1){
@@ -110,12 +118,48 @@ switch ($postData['eventName']) {
 			
 		}
 	break;
+	case 'uploadbase64image': // So here is I already create API to upload base64 image
+	
+		$image = $postData['image']; //This a postdata here we going to collect the base64 image.
+		$image_name = ""; //declaring the image name variable
+		if (strlen($image) > 0) { //Set the validation that if image lenght must be greater than 0. So image is in base64 so it will be in string
+			
+	        $image_name = round(microtime(true) * 1000). ".jpg"; //Giving new name to image.
+
+	        $image_upload_dir = $_SERVER['DOCUMENT_ROOT'].'/Todolist_corephp/image/'.$image_name; //Set the path where we need to upload the image.
+
+
+	        $flag = file_put_contents($image_upload_dir, base64_decode($image));
+	        //Here is the main code to convert Base64 image into the real image/Normal image.
+	        //file_put_contents is function of php. first parameter is the path where you neeed to upload the image. second parameter is the base64image and with the help of base64_decode function we decoding the image.
+
+	        if($flag){ //Basically flag variable is set for if image get uploaded it will give us true then we will save it in database or else we give response for fail.
+
+	        	$qry2 = mysqli_query($conn,'INSERT into image (id,name) VALUES("","'.$image_name.'")');
+	        	$res['data']['image'] = $image_name;
+				$res['status'] = 'success';
+				$res['message'] = 'Base64 image uploaded';
+
+				//So lets try to upload image via postman
+	        }else{
+	        	$res['data'] = array();
+				$res['status'] = 'fail';
+				$res['message'] = 'Something wrong';
+	        }
+	        
+	    }else{
+	    	$res['data'] = array();
+			$res['status'] = 'fail';
+			$res['message'] = 'Please passed image';
+	    }
+
+	break;
 	default:
 		$res['data'] = array();
 		$res['status'] = 'fail';
 		$res['message'] = 'No event found';
 		break;
 }
-echo json_encode($res);
+echo json_encode($res); //all API response send from here
 
 ?>
