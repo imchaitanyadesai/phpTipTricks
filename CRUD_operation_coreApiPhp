@@ -5,9 +5,12 @@ error_reporting(0);
 $postData = file_get_contents('php://input'); //collect inout parameters
 $postData = json_decode($postData,true); //convert into readable format
 
-/*echo '<pre>';
-print_r($postData);
-echo '</pre>';*/
+if(empty($postData)){
+	$postData = $_POST;
+}
+// echo '<pre>';
+// print_r($postData);
+// echo '</pre>';
 
 switch ($postData['eventName']) { //here event name is API name
 	case 'newTask': //We have create a case with API name so when we call API it work on only
@@ -152,8 +155,47 @@ switch ($postData['eventName']) { //here event name is API name
 			$res['status'] = 'fail';
 			$res['message'] = 'Please passed image';
 	    }
-
 	break;
+
+
+
+	case 'uploadpostimage': //This video is of how to upload image with $_FILES via Rest API
+		//Here we set the path where we need upload the image
+		$target_dir = $_SERVER['DOCUMENT_ROOT'].'/Todolist_corephp/image/'; 
+		if($_FILES['filetoupload']['name'] != ""){ //Here we set the condition is image is getting passed by $_FILES or not
+			$image_name = basename($_FILES["filetoupload"]["name"]); //Here getting the base name
+			$target_file = $target_dir . $image_name; //merging/combine the path and image name
+			$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION)); //finding the extension of the image
+			if($imageFileType = "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) { //Here we set the validation which type of image we need to upload
+				$res['data'] = array();
+				$res['message'] = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+				$res['status'] = 'fail';
+			}else{
+				//every thing is right then only it come to this part here we uploading the image with move uploaded files function.
+				if (move_uploaded_file($_FILES["filetoupload"]["tmp_name"], $target_file)) {
+					//storing the image into the database and returning the data in response
+					$qry2 = mysqli_query($conn,'INSERT into image (id,name) VALUES("","'.$image_name.'")');
+					$res['data']['image'] = $image_name;
+					$res['status'] = 'success';
+					$res['message'] = 'Base64 image uploaded';
+				}else{
+					//This is the else part if image is broken or anything
+					$res['data'] = array();
+					$res['message'] = "Sorry, there was an error uploading your file.";
+					$res['status'] = 'fail';
+				}
+			}
+		}else{
+			//This is the else part if you did not pass the image in parametr.
+			//Let check the demo
+			//Thank you for watching. Subscibe to my channel and add into the comment what kind of other php solution you neede. I will make video according to same.
+			$res['data'] = array();
+			$res['status'] = 'fail';
+			$res['message'] = 'Please passed image';
+		}
+	break;
+
+
 	default:
 		$res['data'] = array();
 		$res['status'] = 'fail';
